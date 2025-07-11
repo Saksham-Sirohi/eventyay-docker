@@ -141,11 +141,12 @@ sudo dpkg -i google-chrome-stable_current_amd64.deb
 ```
 
 Chrome in WSL can be accessed by (if installed inside WSL):
+
 ```
 google-chrome app.eventyay.com
 ```
 
-## Launching the Application
+## Launching the Application (Ensure you are in eventyay-docker for this the whole time)
 
 ### 1. Start the Containers
 
@@ -164,15 +165,15 @@ docker compose -f docker-compose-dev.yml up -d
 docker exec -ti eventyay-ticket bash
 ```
 
-> Once inside the container, run:
+>  Once inside the container, run:
 >
-> ```bash
-> # Create a superuser account for the ticket system
-> cd ~
-> pretix createsuperuser
-> # Type 'exit' when finished to return to your host terminal
-> exit
-> ```
+>  ```bash
+>  # Create a superuser account for the ticket system
+>  cd ~
+>  pretix createsuperuser
+>  # Type 'exit' when finished to return to your host terminal
+>  exit
+>  ```
 
 **IMPORTANT: Do not access the web pages yet!**
 
@@ -183,21 +184,69 @@ docker exec -ti eventyay-ticket bash
 docker exec -ti eventyay-talk bash
 ```
 
-> Once inside the container, run:
+>  Once inside the container, run:
 >
-> ```bash
-> # Initialize talk system with a superuser account
-> cd ~
-> pretalx init
-> # Type 'exit' when finished to return to your host terminal
-> exit
-> ```
+>  ```bash
+>  # Initialize talk system with a superuser account
+>  pretalx init
+>  # Type 'exit' when finished to return to your host terminal
+>  exit
+>  ```
+
+### Create video superuser for the eventyay-video container
+
+>  ```bash
+>  # Initialize video system with a superuser account
+>  docker exec -it eventyay-video python3 manage.py import_config sample/worlds/sample.json 
+>  docker exec -it eventyay-video python3 manage.py createsuperuser
+>  ```
+
+   **Change the port number from 8443 to 8375 in config.js**
+
+>  ```bash
+>  # Initialize video system with correct config ensure you are in eventyay-docker directory
+>  #!/bin/bash
+>  CONFIG_FILE="../eventyay-video/webapp/config.js"
+>  OLD_PORT="8443"
+>  NEW_PORT="8375"
+>  if [[ ! -f "$CONFIG_FILE" ]]; then
+>    echo "File not found: $CONFIG_FILE"
+>    exit 1
+>  fi
+>  if grep -q "$OLD_PORT" "$CONFIG_FILE"; then
+>    sed -i "s/$OLD_PORT/$NEW_PORT/g" "$CONFIG_FILE"
+>    echo "Port changed from $OLD_PORT to $NEW_PORT in $CONFIG_FILE"
+>  else
+>    echo "Port $OLD_PORT not found in $CONFIG_FILE. No changes made."
+>  fi
+>  ```
 
 ## Accessing the System
 
-Visit `https://app.eventyay.com/tickets/` and log in with the user/password you defined above.
+Visit `https://app.eventyay.com/tickets/login` and log in with the user/password you defined above.
+
+## Setting Up SSO entry
+
+Upon successful login turn on admin mode in the menu with your email go to admin under global settings in the side menu navigate to generate keys for sso use this redirect URL `https://app.eventyay.com/talk/oauth2/callback/`
+
+```bash
+# Execute this command in your host terminal to enter the talk container
+docker exec -ti eventyay-talk bash
+```
+
+>  Once inside the container, run:
+>
+>  ```bash
+>  # Initialize talk system with a superuser account
+>  cd src
+>  ./manage.py create_social_apps
+>  # Type 'exit' when finished to return to your host terminal
+>  exit
+>  ```
 
 After logging in to tickets, you should be able to go to `https://app.eventyay.com/talk/`, click on the login text, and get automatically logged in.
+
+In order to access to access eventyay-video go to `http://app.eventyay.com:8002/control`
 
 ## Development Workflow
 
@@ -213,4 +262,4 @@ If you encounter issues with the login or connections between services, ensure:
 3. You've properly initialized both the ticket and talk systems with identical credentials.
 4. If using Windows WSL, consider switching to a native Ubuntu 22.04+ installation for better Docker compatibility.
 5. Docker networking can sometimes be problematic with WSL - if you experience connectivity issues, try restarting the Docker service.
- 6. If you are having problem with user creation due to data directory permissions it is highly likely that you have done something wrong in step 3 of building and configuration.
+6. If you are having problem with user creation due to data directory permissions it is highly likely that you have done something wrong in step 3 of building and configuration.
