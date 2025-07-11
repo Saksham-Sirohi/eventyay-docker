@@ -4,10 +4,24 @@ This guide will help you set up the complete app.eventyay.com system locally for
 
 ## Prerequisites
 
-- Docker (May require installation if not already done)/Install Docker Desktop on MacOS enable rosetta translation in docker if on arm
-- Docker Compose
+- Docker (May require installation if not already done) / Install Docker Desktop on MacOS enable rosetta translation in docker if on arm / WSL integration to be used when using on Windows
+- Docker Compose (Alternatively docker-compose can be used but requires editing command)
+- Docker buildx
 - NPM/Node (May require installation if not already done) on MacOS you can install it with homebrew
-- git
+- git(ssh setup required)
+
+**Check whether pre-requisites are installed on your system**
+
+```bash
+docker version
+docker buildx version
+docker compose version
+npm -v
+node -v
+ssh -T git@github.com
+```
+
+if any of these fail please check and install missing prerequisites before going further
 
 ## Video Tutorial
 
@@ -48,9 +62,11 @@ git clone $FOSSASIA_GITHUB/eventyay-video
 > **Note:** Forking repositories is optional but recommended if you plan to contribute. If you've forked the repositories, you can add your personal clone as a remote:
 >
 > ```bash
-> # from the for loop you can remove repositories that you haven't forked for development
+> # from the for loop you can remove repositories that you havent forked for development
 > for repo in eventyay-talk eventyay-tickets eventyay-video eventyay-docker; do
 >   cd $WORKDIR/$repo
+>   # this will remove old personal remote you can remove this if needed
+>   git remote remove personal 2>/dev/null || true
 >   git remote add personal $PERSONAL_GITHUB/$repo.git
 >   git fetch personal
 >   cd $WORKDIR
@@ -205,7 +221,6 @@ docker exec -ti eventyay-talk bash
 
 >  ```bash
 >  # Initialize video system with correct config ensure you are in eventyay-docker directory
->  #!/bin/bash
 >  CONFIG_FILE="../eventyay-video/webapp/config.js"
 >  OLD_PORT="8443"
 >  NEW_PORT="8375"
