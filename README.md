@@ -213,7 +213,8 @@ docker exec -ti eventyay-talk bash
 
 >  ```bash
 >  # Initialize video system with a superuser account
->  docker exec -it eventyay-video python3 manage.py import_config sample/worlds/sample.json 
+>  docker exec -it eventyay-video python3 manage.py migrate
+>  docker exec -it eventyay-video python3 manage.py import_config sample/worlds/sample.json
 >  docker exec -it eventyay-video python3 manage.py createsuperuser
 >  ```
 
