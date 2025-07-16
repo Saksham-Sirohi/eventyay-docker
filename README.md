@@ -1,6 +1,6 @@
-# Setting Up a Development Environment for EventYay Components
+# Setting Up a Working Environment for EventYay Components
 
-This guide will help you set up the complete app.eventyay.com system locally for development using Docker.
+This guide will help you set up the complete app.eventyay.com system using Docker.
 
 ## Prerequisites
 
@@ -30,12 +30,12 @@ For visual guidance, you can watch the EventYay Setup tutorial for FOSSASIA Summ
 
 ## Initial Setup
 
-### 1. Prepare Your Work Directory
+### 1. Prepare Your Working Directory
 
-First, set up a work directory where all development will happen:
+First, set up a working directory where all development will happen:
 
 ```bash
-# Define your work directory replace eventyay-dev with name of your preference
+# Define your working directory replace eventyay-dev with name of your preference
 export WORKDIR=~/eventyay-dev
 mkdir -p $WORKDIR
 cd $WORKDIR
@@ -50,7 +50,6 @@ Clone all the required repositories:
 ```bash
 # Define GitHub paths
 FOSSASIA_GITHUB=https://github.com/fossasia
-PERSONAL_GITHUB=git@github.com:<YOUR_GITHUB_USERNAME>
 
 # Clone all FOSSASIA repos
 git clone $FOSSASIA_GITHUB/eventyay-docker
@@ -59,10 +58,11 @@ git clone $FOSSASIA_GITHUB/eventyay-tickets
 git clone $FOSSASIA_GITHUB/eventyay-video
 ```
 
-> **Note:** Forking repositories is optional but recommended if you plan to contribute. If you've forked the repositories, you can add your personal clone as a remote:
+> **Note:** Forking repositories is optional but recommended if you plan to contribute. If you've forked the repositories, you can add your personal clone as a remote **(Only for Development)** :
 >
 > ```bash
-> # from the for loop you can remove repositories that you havent forked for development
+> # from the for loop you can remove repositories that you havent forked for development also remember to add your github username
+> PERSONAL_GITHUB=git@github.com:<YOUR_GITHUB_USERNAME>
 > for repo in eventyay-talk eventyay-tickets eventyay-video eventyay-docker; do
 >   cd $WORKDIR/$repo
 >   # this will remove old personal remote you can remove this if needed
@@ -77,7 +77,7 @@ All checked out repos (except eventyay-docker) should default to the `developmen
 
 ## Building and Configuration
 
-### 1. Build Development-Oriented Images
+### 1. Build Docker Images
 
 ```bash
 # From your $WORKDIR
@@ -172,7 +172,7 @@ docker compose -f docker-compose-dev.yml up -d
 
 ### 2. Initial User Setup
 
-⚠️ **Critical:** Use identical email address and password for both the pretix and pretalx superusers. The systems are integrated and rely on matching credentials. Avoid root access as it can cause configuration issues.
+⚠️ **Critical:** Use identical email address and password for all the superusers. The systems are integrated and rely on matching credentials. Avoid root access as it can cause configuration issues.
 
 ### Create ticket superuser in the eventyay-ticket container
 
@@ -181,15 +181,15 @@ docker compose -f docker-compose-dev.yml up -d
 docker exec -ti eventyay-ticket bash
 ```
 
->  Once inside the container, run:
+> Once inside the container, run:
 >
->  ```bash
->  # Create a superuser account for the ticket system
->  cd ~
->  pretix createsuperuser
->  # Type 'exit' when finished to return to your host terminal
->  exit
->  ```
+> ```bash
+> # Create a superuser account for the ticket system
+> cd ~
+> pretix createsuperuser
+> # Type 'exit' when finished to return to your host terminal
+> exit
+> ```
 
 **IMPORTANT: Do not access the web pages yet!**
 
@@ -200,7 +200,7 @@ docker exec -ti eventyay-ticket bash
 docker exec -ti eventyay-talk bash
 ```
 
->  Once inside the container, run:
+> Once inside the container, run:
 >
 >  ```bash
 >  # Initialize talk system with a superuser account
@@ -218,7 +218,7 @@ docker exec -ti eventyay-talk bash
 >  docker exec -it eventyay-video python3 manage.py createsuperuser
 >  ```
 
-   **Change the port number from 8443 to 8375 in config.js**
+   **Change the port number from 8443 to 8375 in config.js (Only for Local Development Setup)**
 
 >  ```bash
 >  # Initialize video system with correct config ensure you are in eventyay-docker directory
@@ -262,7 +262,7 @@ docker exec -ti eventyay-talk bash
 
 After logging in to tickets, you should be able to go to `https://app.eventyay.com/talk/`, click on the login text, and get automatically logged in.
 
-In order to access to access eventyay-video go to `http://app.eventyay.com:8002/control`
+In order to access to access eventyay-video go to `http://app.eventyay.com:8002/control` **(Only for Local Development)** otherwise go to `http://app.eventyay.com/video`
 
 ## Development Workflow
 
