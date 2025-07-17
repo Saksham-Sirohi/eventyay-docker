@@ -9,6 +9,7 @@ This guide will help you set up the complete app.eventyay.com system using Docke
 - Docker buildx
 - NPM/Node (May require installation if not already done) on MacOS you can install it with homebrew
 - git(ssh setup required)
+- arch[i386(x86_64) as eventyay video npm install causes issues on arm based systems; use rosetta on mac]
 
 **Check whether pre-requisites are installed on your system**
 
@@ -19,6 +20,7 @@ docker compose version
 npm -v
 node -v
 ssh -T git@github.com
+arch
 ```
 
 if any of these fail please check and install missing prerequisites before going further
@@ -42,6 +44,8 @@ cd $WORKDIR
 ```
 
 > **Note on Environment:** For optimal performance, use Ubuntu 22.04 LTS or newer(Prefer LTS as some latest builds are causing some issue with docker) , or macOS. Windows Subsystem for Linux (WSL) may cause issues with Docker networking and file permissions.
+
+> **If you're on MacOS use terminal with rosetta to avoid arm specific errors if any, you can do this by checking open using rosetta this can be found in Applications/Utilities right-click terminal and select get info you will find the option there after enabling quit and restart terminal**
 
 ### 2. Clone Repositories
 
@@ -89,10 +93,7 @@ cd ..
 
 ### 2. Set Up EventYay Video
 
-The video webapp needs node modules etc installed and build.
-This is done in during the docker image build step, but since
-we mount the checked out eventyay-video directory into the
-container, the built-in directory with node-modules etc is hidden.
+The video webapp needs node modules etc installed and build. This is done in during the docker image build step, but since we mount the checked out eventyay-video directory into the container, the built-in directory with node-modules etc is hidden. If doing this on mac make sure rosetta is used by terminal you can confirm this by using arch this should be i386
 
 ```bash
 cd eventyay-video/webapp
@@ -202,40 +203,46 @@ docker exec -ti eventyay-talk bash
 
 > Once inside the container, run:
 >
->  ```bash
->  # Initialize talk system with a superuser account
->  pretalx init
->  # Type 'exit' when finished to return to your host terminal
->  exit
->  ```
+> ```bash
+> # Initialize talk system with a superuser account
+> pretalx init
+> # Type 'exit' when finished to return to your host terminal
+> exit
+> ```
 
 ### Create video superuser for the eventyay-video container
 
->  ```bash
->  # Initialize video system with a superuser account
->  docker exec -it eventyay-video python3 manage.py migrate
->  docker exec -it eventyay-video python3 manage.py import_config sample/worlds/sample.json
->  docker exec -it eventyay-video python3 manage.py createsuperuser
->  ```
+> ```bash
+> # Initialize video system with a superuser account
+> docker exec -it eventyay-video python3 manage.py migrate
+> docker exec -it eventyay-video python3 manage.py import_config sample/worlds/sample.json
+> docker exec -it eventyay-video python3 manage.py createsuperuser
+> ```
 
    **Change the port number from 8443 to 8375 in config.js (Only for Local Development Setup)**
 
->  ```bash
->  # Initialize video system with correct config ensure you are in eventyay-docker directory
->  CONFIG_FILE="../eventyay-video/webapp/config.js"
->  OLD_PORT="8443"
->  NEW_PORT="8375"
->  if [[ ! -f "$CONFIG_FILE" ]]; then
->    echo "File not found: $CONFIG_FILE"
->    exit 1
->  fi
->  if grep -q "$OLD_PORT" "$CONFIG_FILE"; then
->    sed -i "s/$OLD_PORT/$NEW_PORT/g" "$CONFIG_FILE"
->    echo "Port changed from $OLD_PORT to $NEW_PORT in $CONFIG_FILE"
->  else
->    echo "Port $OLD_PORT not found in $CONFIG_FILE. No changes made."
->  fi
->  ```
+> ```bash
+> # Initialize video system with correct config ensure you are in eventyay-docker directory
+> CONFIG_FILE="../eventyay-video/webapp/config.js"
+> OLD_PORT="8443"
+> NEW_PORT="8375"
+> if [[ ! -f "$CONFIG_FILE" ]]; then
+>   echo "File not found: $CONFIG_FILE"
+>   exit 1
+> fi
+> if grep -q "$OLD_PORT" "$CONFIG_FILE"; then
+>   if [[ "$OSTYPE" == darwin* ]]; then
+>     # macOS
+>     sed -i '' "s/$OLD_PORT/$NEW_PORT/g" "$CONFIG_FILE"
+>   else
+>     # Linux
+>     sed -i "s/$OLD_PORT/$NEW_PORT/g" "$CONFIG_FILE"
+>   fi
+>   echo "Port changed from $OLD_PORT to $NEW_PORT in $CONFIG_FILE"
+> else
+>   echo "Port $OLD_PORT not found in $CONFIG_FILE. No changes made."
+> fi
+> ```
 
 ## Accessing the System
 
@@ -250,15 +257,15 @@ Upon successful login turn on admin mode in the menu with your email go to admin
 docker exec -ti eventyay-talk bash
 ```
 
->  Once inside the container, run:
+> Once inside the container, run:
 >
->  ```bash
->  # Initialize talk system with a superuser account
->  cd src
->  ./manage.py create_social_apps
->  # Type 'exit' when finished to return to your host terminal
->  exit
->  ```
+> ```bash
+> # Initialize talk system with a superuser account
+> cd src
+> ./manage.py create_social_apps
+> # Type 'exit' when finished to return to your host terminal
+> exit
+> ```
 
 After logging in to tickets, you should be able to go to `https://app.eventyay.com/talk/`, click on the login text, and get automatically logged in.
 
