@@ -139,7 +139,7 @@ grep -qxF "127.0.0.1  video.eventyay.com" /etc/hosts || echo "127.0.0.1  video.e
 
 Alternatively, you can change all hostnames in the configuration files in `docker-compose.yaml` and `config/**`.
 
-**->WSL users should run an elevated command prompt in order to add entries to windows hosts:**
+**->WSL users should run command prompt in order to add entries to Windows hosts:**
 
 ```
 findstr /C:"127.0.0.1  app.eventyay.com" %SystemRoot%\System32\drivers\etc\hosts >nul 2>&1 && echo Already exists: app.eventyay.com || (echo 127.0.0.1  app.eventyay.com>>%SystemRoot%\System32\drivers\etc\hosts && echo Added: app.eventyay.com)
