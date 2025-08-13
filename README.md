@@ -65,7 +65,7 @@ git clone $FOSSASIA_GITHUB/eventyay-video
 > **Note:** Forking repositories is optional but recommended if you plan to contribute. If you've forked the repositories, you can add your personal clone as a remote **(Only for Development)** :
 >
 > ```bash
-> # from the for loop you can remove repositories that you havent forked for development also remember to add your github username
+> # From the for loop, remove any repositories that you haven’t forked for development, and remember to add your GitHub username.
 > PERSONAL_GITHUB=git@github.com:<YOUR_GITHUB_USERNAME>
 > for repo in eventyay-talk eventyay-tickets eventyay-video eventyay-docker; do
 >   cd $WORKDIR/$repo
@@ -81,7 +81,7 @@ All checked out repos (except eventyay-docker) should default to the `developmen
 
 ## Building and Configuration
 
-### 1. Build Docker Images
+### 1. Build Development-Oriented Docker Images
 
 ```bash
 # From your $WORKDIR
@@ -93,7 +93,11 @@ cd ..
 
 ### 2. Set Up EventYay Video
 
-The video webapp needs node modules etc installed and build. This is done in during the docker image build step, but since we mount the checked out eventyay-video directory into the container, the built-in directory with node-modules etc is hidden. If doing this on mac make sure rosetta is used by terminal you can confirm this by using arch this should be i386
+This is done in during the docker image build step, but since
+we mount the checked out eventyay-video directory into the
+container, the built-in directory with node-modules etc is hidden.
+If doing this on a Mac, make sure the terminal uses Rosetta. 
+You can confirm this by using the arch command. This should be i386
 
 ```bash
 cd eventyay-video/webapp
@@ -173,7 +177,7 @@ docker compose -f docker-compose-dev.yml up -d
 
 ### 2. Initial User Setup
 
-⚠️ **Critical:** Use identical email address and password for all the superusers. The systems are integrated and rely on matching credentials. Avoid root access as it can cause configuration issues.
+⚠️ **Critical:** Use identical email address and password for both the pretix and pretalx superusers. The systems are integrated and rely on matching credentials. Avoid root access as it can cause configuration issues.
 
 ### Create ticket superuser in the eventyay-ticket container
 
@@ -205,6 +209,7 @@ docker exec -ti eventyay-talk bash
 >
 > ```bash
 > # Initialize talk system with a superuser account
+> cd ~
 > pretalx init
 > # Type 'exit' when finished to return to your host terminal
 > exit
