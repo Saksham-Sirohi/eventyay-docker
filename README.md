@@ -32,12 +32,12 @@ For visual guidance, you can watch the EventYay Setup tutorial for FOSSASIA Summ
 
 ## Initial Setup
 
-### 1. Prepare Your Working Directory
+### 1. Prepare Your Work Directory
 
-First, set up a working directory where all development will happen:
+First, set up a work directory where all development will happen:
 
 ```bash
-# Define your working directory replace eventyay-dev with name of your preference
+# Define your work directory replace eventyay-dev with name of your preference
 export WORKDIR=~/eventyay-dev
 mkdir -p $WORKDIR
 cd $WORKDIR
@@ -62,7 +62,7 @@ git clone $FOSSASIA_GITHUB/eventyay-tickets
 git clone $FOSSASIA_GITHUB/eventyay-video
 ```
 
-> **Note:** Forking repositories is optional but recommended if you plan to contribute. If you've forked the repositories, you can add your personal clone as a remote **(Only for Development)** :
+> **Note:** Forking repositories is optional but recommended if you plan to contribute. If you've forked the repositories, you can add your personal clone as a remote:
 >
 > ```bash
 > # From the for loop, remove any repositories that you haven’t forked for development, and remember to add your GitHub username.
@@ -93,6 +93,7 @@ cd ..
 
 ### 2. Set Up EventYay Video
 
+The video webapp needs node modules etc installed and build.
 This is done in during the docker image build step, but since
 we mount the checked out eventyay-video directory into the
 container, the built-in directory with node-modules etc is hidden.
@@ -143,7 +144,7 @@ grep -qxF "127.0.0.1  video.eventyay.com" /etc/hosts || echo "127.0.0.1  video.e
 
 Alternatively, you can change all hostnames in the configuration files in `docker-compose.yaml` and `config/**`.
 
-**->WSL users should run command prompt in order to add entries to Windows hosts:**
+**->WSL users should run an elevated command prompt in order to add entries to windows hosts:**
 
 ```
 findstr /C:"127.0.0.1  app.eventyay.com" %SystemRoot%\System32\drivers\etc\hosts >nul 2>&1 && echo Already exists: app.eventyay.com || (echo 127.0.0.1  app.eventyay.com>>%SystemRoot%\System32\drivers\etc\hosts && echo Added: app.eventyay.com)
